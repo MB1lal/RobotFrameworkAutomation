@@ -1,8 +1,11 @@
 *** Settings ***
 Documentation    Login page object: locators + reusable login keywords.
-...    Keeps test cases free of Selenium details.
-Library    SeleniumLibrary
-Resource    ../common.resource
+...              Keeps test cases free of Selenium details. Set GRID_URL to run
+...              against a Selenium Grid (e.g. http://localhost:4444/wd/hub).
+
+Library          SeleniumLibrary
+Resource         ../common.resource
+
 
 *** Variables ***
 ${USERNAME_FIELD}    id:username
@@ -11,13 +14,19 @@ ${SUBMIT_BUTTON}     css:button[type="submit"]
 ${LOGOUT_LINK}       css:[href="/logout"]
 ${FLASH_MESSAGE}     id:flash
 
+
 *** Keywords ***
 Open Login Page
-    [Documentation]    Open the login page (headless when HEADLESS=true).
-    IF    '${HEADLESS}' == 'true'
-        Open Browser    ${HEROKU_URL}    ${BROWSER}    options=add_argument("--headless");add_argument("--no-sandbox");add_argument("--disable-dev-shm-usage")
+    [Documentation]    Open the login page (headless when HEADLESS=true,
+    ...    remote when GRID_URL is set).
+    ${options}=    Set Variable If
+    ...    '${HEADLESS}' == 'true'
+    ...    add_argument("--headless");add_argument("--no-sandbox");add_argument("--disable-dev-shm-usage")
+    ...    ${EMPTY}
+    IF    '${GRID_URL}' != ''
+        Open Browser    ${HEROKU_URL}    ${BROWSER}    remote_url=${GRID_URL}    options=${options}
     ELSE
-        Open Browser    ${HEROKU_URL}    ${BROWSER}
+        Open Browser    ${HEROKU_URL}    ${BROWSER}    options=${options}
     END
     Set Selenium Timeout    ${TIMEOUT}
     Maximize Browser Window
@@ -26,8 +35,8 @@ Open Login Page
 Input Credentials
     [Documentation]    Fill username and password. Defaults come from env vars.
     [Arguments]    ${username}=${HEROKU_USER}    ${password}=${HEROKU_PASSWORD}
-    Input Text         ${USERNAME_FIELD}    ${username}
-    Input Password     ${PASSWORD_FIELD}    ${password}
+    Input Text    ${USERNAME_FIELD}    ${username}
+    Input Password    ${PASSWORD_FIELD}    ${password}
 
 Submit Login
     [Documentation]    Click the login button.

@@ -1,0 +1,10 @@
+# Local development defaults. Load with:
+#   robot --pythonpath . --variablefile config/dev.yaml --outputdir Results Tests
+PET_BASE_URL: https://petstore.swagger.io/v2/pet
+HEROKU_URL: https://the-internet.herokuapp.com/login
+BROWSER: Chrome
+HEADLESS: false
+TIMEOUT: 10s
+VERIFY_TLS: true
+API_TIMEOUT: 10
+API_MAX_RETRIES: 3

@@ -1,10 +1,13 @@
-"""Petstore payload builder.
+"""Petstore payload builder and response validator.
 
-Pure-python keyword library (no network): keeps payload shape in one
+Pure-python keyword library: payload shape and schema checks live in one
 place so API suites don't duplicate dictionaries.
 """
 
-__version__ = '2.0.0'
+import json
+from pathlib import Path
+
+__version__ = '2.1.0'
 
 from robot.api.deco import keyword
 
@@ -29,3 +32,22 @@ class PetConnector:
             'tags': [category],
             'status': status,
         }
+
+    @keyword('Validate Pet Schema')
+    def validate_pet_schema(self, data, schema_path):
+        """Validate a response body ``data`` against the JSON schema file.
+
+        Raises an AssertionError listing every violation.
+        """
+        import jsonschema
+
+        schema = json.loads(Path(schema_path).read_text(encoding='utf-8'))
+        validator = jsonschema.Draft202012Validator(schema)
+        errors = sorted(validator.iter_errors(data), key=lambda e: list(e.path))
+        if errors:
+            details = '\n'.join(
+                f"- {'/'.join(str(p) for p in e.path) or '<root>'}: {e.message}"
+                for e in errors
+            )
+            raise AssertionError(f'Response does not match {schema_path}:\n{details}')
+        return True

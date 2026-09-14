@@ -1,31 +1,22 @@
 [project]
 name = "robotframework-practice"
-version = "2.0.0"
+version = "2.1.0"
 description = "Practice framework for UI + API test automation with Robot Framework"
 readme = "Readme.md"
 requires-python = ">=3.10"
 dependencies = [
-    "robotframework>=7.3.2",
-    "robotframework-seleniumlibrary>=6.7.1",
-    "robotframework-browser>=19.0.0",
-    "robotframework-requests>=0.9.7",
-    "robotframework-jsonlibrary>=0.5",
-    "robotframework-faker>=5.0.0",
-    "robotframework-pabot>=5.0.0",
-    "robocop>=5.4.0",
-    "jsonschema>=4.0",
-    "PyYAML>=6.0",
-    "selenium>=4.21",
+    "robotframework==7.5",
+    "selenium==4.44.0",
+    "robotframework-seleniumlibrary==6.9.0",
+    "robotframework-browser==20.4.0",
+    "robotframework-requests==0.9.7",
+    "robotframework-jsonlibrary==0.5",
+    "jsonschema==4.26.0",
+    "PyYAML==6.0.3",
+    "robotframework-faker==6.0.0",
+    "robotframework-pabot==5.2.2",
+    "robotframework-datadriver==1.11.2",
+    "robotframework-robocop==9.0.0",
+    "allure-robotframework==2.16.0",
+    "allure-combine==1.0.11",
 ]
-
-[tool.robocop]
-paths = ["Tests", "Resources", "Library"]
-reports = ["all"]
-
-[tool.robotidy]
-transforms = [
-    "AlignSettingsSection",
-    "NormalizeTags",
-    "OrderTags",
-]
-line-length = 120

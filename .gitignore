@@ -12,6 +12,7 @@ output.xml
 log.html
 report.html
 *.png
+.pabotsuitenames
 
 # Env / secrets
 .env

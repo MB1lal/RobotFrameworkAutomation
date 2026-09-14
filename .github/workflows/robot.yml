@@ -24,10 +24,9 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install lint deps
-        run: pip install "robocop>=5.4.0"
+        run: pip install -r requirements.txt
       - name: Robocop check
-        run: robocop check Tests Resources Library || python -m robocop Tests Resources Library
-        continue-on-error: true
+        run: robocop check Tests Resources Library
 
   test:
     name: API + UI tests
@@ -39,6 +38,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - name: Install Chrome (Selenium suites)
+        uses: browser-actions/setup-chrome@v1
       - name: Install dependencies
         run: |
           pip install -U pip
@@ -48,11 +49,49 @@ jobs:
       - name: Run tests in parallel
         run: |
           mkdir -p Results
-          python -m pabot.pabot --processes 2 --outputdir Results Tests
+          python -m pabot.pabot --processes 2 --pythonpath . \
+            --variablefile config/prod.yaml --outputdir Results Tests
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: robot-results
           path: Results/
+          retention-days: 14
+
+  allure:
+    name: Allure history report
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install -r requirements.txt
+      - name: Serial run with Allure listener (API suite)
+        run: |
+          mkdir -p Results/allure-results
+          python -m robot --pythonpath . --variablefile config/prod.yaml \
+            --outputdir Results \
+            --listener "allure_robotframework;Results/allure-results" Tests/Backend
+      - name: Generate static report
+        if: always()
+        run: |
+          npm install -g allure-commandline
+          allure generate Results/allure-results -o Results/allure-report --clean
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: Results/allure-report/
           retention-days: 14

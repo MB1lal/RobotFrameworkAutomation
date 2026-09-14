@@ -12,7 +12,7 @@ class CustomLib:
     ROBOT_LIBRARY_VERSION = __version__
     ROBOT_LIBRARY_SCOPE = 'TEST'
 
-    @keyword('Generate random name')
+    @keyword('Generate Random Name')
     def get_random_name(self, length=10):
         """Return a random lowercase name of ``length`` characters.
 
