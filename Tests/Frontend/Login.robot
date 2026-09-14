@@ -23,4 +23,4 @@ Verify Invalid Login Shows Error
     [Documentation]    Wrong password keeps the user out with an error banner.
     Input Credentials    ${HEROKU_USER}    wrong-password
     Submit Login
-    Login Error Should Be Visible
+    Login Error Should Be Visible    Your password is invalid!

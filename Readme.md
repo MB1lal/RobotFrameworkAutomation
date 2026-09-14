@@ -31,7 +31,7 @@ make install browsers
 
 `make install` pins everything in `requirements.txt` (Robot Framework 7.5, SeleniumLibrary 6.9, Browser 20.4, and friends). `make browsers` downloads the Playwright browsers. Activating the venv matters — `pabot` shells out to the `robot` on your PATH.
 
-Copy `.env.example` to `.env` if you want to override the defaults (URLs, user, browser, headless mode, Selenium Grid URL) — totally optional, everything works out of the box.
+Copy `.env.example` to `.env` to override the defaults (URLs, user, browser, headless mode, Selenium Grid URL) — `make` loads it automatically. Everything also works out of the box without it.
 
 ## Running tests
 
@@ -73,7 +73,7 @@ docker run --rm -v "$PWD/Results:/opt/tests/Results" rf-practice
 - Lint & format: `make lint` (Robocop 9, must be clean — CI enforces it), `robocop format Tests Resources` to auto-fix
 - Data-driven: DataDriver CSVs use `;` as the delimiter (that's its default dialect), with `${...}` headers matching the template keyword's `[Arguments]`
 - CI: every push and PR to `master` runs lint, the full suite in parallel (Chrome is installed for the Selenium suites), then builds the Allure report and uploads both artifacts
-- Legacy note: `Resources/config.ini` is leftover from the early days; the real knobs now are `config/*.yaml` + env vars
+- Config: `config/*.yaml` picked with `make test ENV=stage` (or `--variablefile`), secrets always via env vars / `.env`
 
 ## Blogs I wrote along the way
 

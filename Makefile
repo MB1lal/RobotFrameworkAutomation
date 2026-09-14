@@ -4,6 +4,10 @@
 PYTHON ?= $(shell [ -x venv/bin/python ] && echo venv/bin/python || echo python3)
 RESULTS ?= Results
 ENV ?= dev
+
+# Auto-load .env (copied from .env.example) so `make test` picks it up.
+-include .env
+export
 COMMON_ARGS ?= --pythonpath . --variablefile config/$(ENV).yaml
 
 install:
