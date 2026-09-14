@@ -1,0 +1,31 @@
+[project]
+name = "robotframework-practice"
+version = "2.0.0"
+description = "Practice framework for UI + API test automation with Robot Framework"
+readme = "Readme.md"
+requires-python = ">=3.10"
+dependencies = [
+    "robotframework>=7.3.2",
+    "robotframework-seleniumlibrary>=6.7.1",
+    "robotframework-browser>=19.0.0",
+    "robotframework-requests>=0.9.7",
+    "robotframework-jsonlibrary>=0.5",
+    "robotframework-faker>=5.0.0",
+    "robotframework-pabot>=5.0.0",
+    "robocop>=5.4.0",
+    "jsonschema>=4.0",
+    "PyYAML>=6.0",
+    "selenium>=4.21",
+]
+
+[tool.robocop]
+paths = ["Tests", "Resources", "Library"]
+reports = ["all"]
+
+[tool.robotidy]
+transforms = [
+    "AlignSettingsSection",
+    "NormalizeTags",
+    "OrderTags",
+]
+line-length = 120

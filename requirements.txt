@@ -1,0 +1,16 @@
+# Core
+robotframework>=7.3.2
+selenium>=4.21
+robotframework-seleniumlibrary>=6.7.1
+robotframework-browser>=19.0.0
+
+# API
+robotframework-requests>=0.9.7
+robotframework-jsonlibrary>=0.5
+jsonschema>=4.0
+PyYAML>=6.0
+
+# Data / scale / quality
+robotframework-faker>=5.0.0
+robotframework-pabot>=5.0.0
+robocop>=5.4.0
