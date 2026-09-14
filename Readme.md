@@ -1,4 +1,4 @@
-[![Robot Tests](https://github.com/MB1lal/RobotFrameworkPractice/actions/workflows/robot.yml/badge.svg)](https://github.com/MB1lal/RobotFrameworkPractice/actions/workflows/robot.yml)
+[![Robot Tests](https://github.com/MB1lal/RobotFrameworkAutomation/actions/workflows/robot.yml/badge.svg)](https://github.com/MB1lal/RobotFrameworkAutomation/actions/workflows/robot.yml)
 
 # Robot Framework Practice
 
@@ -20,8 +20,8 @@ A couple of habits baked in that I wish someone had told me earlier: no hardcode
 You'll need Python 3.10+ (3.12 works great).
 
 ```bash
-git clone https://github.com/MB1lal/RobotFrameworkPractice.git
-cd RobotFrameworkPractice
+git clone https://github.com/MB1lal/RobotFrameworkAutomation.git
+cd RobotFrameworkAutomation
 pip install -r requirements.txt
 # only needed for the Browser (Playwright) library:
 rfbrowser init
