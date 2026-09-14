@@ -1,107 +1,61 @@
 *** Settings ***
-Documentation  API Testing in Robot Framework
-Library  SeleniumLibrary
-Library  RequestsLibrary
-Library  JSONLibrary
-Library  Collections
-Library  ../../Library/CustomLib.py
+Documentation     Petstore API regression suite (demo API: petstore.swagger.io).
+...               One session per suite, unique ids per test, no global variables.
 
-*** Variables ***
-${basePetURI}   https://petstore.swagger.io/v2/pet
+Resource          ../../Resources/api/pet_api.resource
+Library           FakerLibrary
+
+Suite Setup       Create Petstore Session
+Suite Teardown    Delete All Sessions
+
+Test Tags         api    regression
+
 
 *** Test Cases ***
+Create And Fetch Pet By Id
+    [Documentation]    Create a pet with a unique id, then fetch and verify it.
+    [Tags]    smoke
+    ${pet_id}=    Generate Random Id
+    ${pet_name}=    First Name
+    ${payload}=    Build Pet Payload    pet_id=${pet_id}    name=${pet_name}    status=available
+    ${created}=    Create Pet    ${payload}
+    Status Should Be    200    ${created}
+    ${fetched}=    Get Pet By Id    ${pet_id}
+    Status Should Be    200    ${fetched}
+    Pet Id Should Be    ${fetched}    ${pet_id}
+    Pet Status Should Be    ${fetched}    available
+    Pet Response Should Match Schema    ${fetched}
 
-Verifying newly added pet through Id
-    I add the pet with id = 10001
-    I call the pet api with id = 10001
-    The pet with id = 10001 exists
+Find Newly Created Pet By Status
+    [Documentation]    Create a sold pet, then verify it shows up in findByStatus.
+    ${pet_id}=    Generate Random Id
+    ${pet_name}=    Generate Random Name    ${10}
+    ${payload}=    Build Pet Payload    pet_id=${pet_id}    name=${pet_name}    status=sold
+    ${created}=    Create Pet    ${payload}
+    Status Should Be    200    ${created}
+    ${listed}=    Find Pets By Status    sold
+    Status Should Be    200    ${listed}
+    Pet List Should Contain Pet With Status    ${listed}    ${pet_id}    sold
 
-Verifying newly added pet through Status
-    I add the pet with status = sold
-    I call the pet api with status
-    The pet has status = sold
+Delete Pet
+    [Documentation]    Create a pet, delete it, then verify it is gone (404).
+    ${pet_id}=    Generate Random Id
+    ${payload}=    Build Pet Payload    pet_id=${pet_id}    status=available
+    ${created}=    Create Pet    ${payload}
+    Status Should Be    200    ${created}
+    ${deleted}=    Delete Pet    ${pet_id}
+    Status Should Be    200    ${deleted}
+    Get Pet By Id    ${pet_id}    expected_status=404
 
-Verifying newly added pet can be deleted
-    I add the pet with id = 10002
-    I call the pet deletion api with id = 10002
-    The pet with id = 10002 doesn't exist
-
-Verifying pet details are correctly updated
-    I add the pet with id = 10004
-    I update the pet name to Unicorn
-    I update the pet status to sold
-    I call the pet api with id = 10004
-    The pet with id = 10004 exists
-    The pet has status = sold
-
-*** Keywords ***
-I add the pet with id = ${id}
-    Create Session    mysession     ${basePetURI}   verify=true
-    ${category_1}   create dictionary    id=${569}     name=TestDragon
-    ${Category}=  create dictionary    id=${569}      name=TestDragon
-    ${PhotoURLs}=   create list    photoURL
-    ${Tags}=    create list     ${category_1}
-    &{body}=    create dictionary    id=${id}   category=${Category}    name=TestingDragon  photoUrls=${PhotoURLs}  tags=${Tags}    status=availble
-    &{header}=  Create Dictionary  Content-Type=application/json
-    ${response}=    POST On Session    mysession    \   json=${body}
-    Status Should Be    200
-    set global variable    ${id}
-
-I call the pet api with id = ${id}
-     Create Session    mysession     ${basePetURI}   verify=true
-     ${response}=  GET On Session  mysession  /${id}
-     Status Should Be  200  ${response}  #Check Status as 200
-     Set Global Variable      ${response}
-
-The pet with id = ${id} exists
-    ${ResponseId}=  Get Value From Json  ${response.json()}  id
-    ${ExpectedId}   convert to string    ${responseId}[0]
-    Should be equal  ${ExpectedId}  ${id}
-
-I add the pet with status = sold
-    ${id}   Evaluate  random.sample(range(1000, 100000),1)   random
-    ${name}     Generate random name    ${10}
-    Create Session    mysession     ${basePetURI}   verify=true
-    ${category_1}   create dictionary    id=${id}[0]     name=${name}
-    ${Category}=  create dictionary    id=${id}[0]      name=${name}
-    ${PhotoURLs}=   create list    photoURL
-    ${Tags}=    create list     ${category_1}
-    &{body}=    create dictionary    id=${id}[0]   category=${Category}    name=${name}  photoUrls=${PhotoURLs}  tags=${Tags}    status=sold
-    &{header}=  Create Dictionary  Content-Type=application/json
-    ${response}=    POST On Session    mysession    \   json=${body}
-    Status Should Be    200
-    Set global variable    ${body}
-    set global variable    ${id}
-
-I call the pet api with status
-    Create Session    mysession     ${basePetURI}   verify=true
-    ${params} =    Create Dictionary    status=sold
-    ${response}=  GET On Session  mysession  /findByStatus     params=${params}
-    Status Should Be  200  ${response}  #Check Status as 200
-    Set Global Variable      ${response}
-
-The pet has status = sold
-    ${firstChar}    convert json to string    ${response.json()}
-    IF    "${firstChar}[0]" == "["
-        FOR   ${item}   IN  @{response.json()}
-            IF    ${item['id']} == ${id}[0]
-                 should be equal as strings    sold   ${item['status']}
-            END
-        END
-    ELSE
-        ${response_status}  Get Value From Json  ${response.json()}  status
-        should be equal    sold     ${response_status}[0]
-    END
-
-I call the pet deletion api with id = 10002
-    Create Session    mysession     ${basePetURI}   verify=true
-    DELETE On Session    mysession  /${id}
-
-The pet with id = 10002 doesn't exist
-    Create Session    mysession     ${basePetURI}   verify=true
-    GET On Session  mysession  /${id}   expected_status=404
-
-I update the pet ${attribute} to ${attribute_value}
-    Create Session    mysession     ${basePetURI}   verify=true
-    ${form_data}    create dictionary    ${attribute}=${attribute_value}
-    POST On session    mysession    /${id}  data=${form_data}   expected_status=200
+Update Pet Name And Status
+    [Documentation]    Create a pet, update name/status via form, verify status.
+    ${pet_id}=    Generate Random Id
+    ${payload}=    Build Pet Payload    pet_id=${pet_id}    status=available
+    ${created}=    Create Pet    ${payload}
+    Status Should Be    200    ${created}
+    Update Pet Name And Status    ${pet_id}    Unicorn    sold
+    ${fetched}=    Get Pet By Id    ${pet_id}
+    Status Should Be    200    ${fetched}
+    Pet Id Should Be    ${fetched}    ${pet_id}
+    Pet Status Should Be    ${fetched}    sold
+    Pet Response Should Match Schema    ${fetched}

@@ -1,0 +1,11 @@
+# Production-like / CI environment. Load with:
+#   robot --pythonpath . --variablefile config/prod.yaml --outputdir Results Tests
+# Secrets (HEROKU_USER/HEROKU_PASSWORD) always come from env vars, never here.
+PET_BASE_URL: https://petstore.swagger.io/v2/pet
+HEROKU_URL: https://the-internet.herokuapp.com/login
+BROWSER: Chrome
+HEADLESS: true
+TIMEOUT: 15s
+VERIFY_TLS: true
+API_TIMEOUT: 15
+API_MAX_RETRIES: 5

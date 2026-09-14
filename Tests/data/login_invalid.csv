@@ -1,0 +1,5 @@
+*** Test Cases ***;${username};${password};${error}
+Wrong password;tomsmith;wrong-password;Your password is invalid!
+Wrong username;wrong-user;SuperSecretPassword!;Your username is invalid!
+Empty username;${EMPTY};SuperSecretPassword!;Your username is invalid!
+Empty password;tomsmith;${EMPTY};Your password is invalid!

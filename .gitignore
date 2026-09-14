@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Robot Framework output
+Results/
+results/
+output.xml
+log.html
+report.html
+*.png
+.pabotsuitenames
+
+# Env / secrets
+.env
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Node (Browser library / Playwright)
+node_modules/
+package-lock.json

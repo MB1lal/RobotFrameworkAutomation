@@ -1,0 +1,21 @@
+# Pinned 2026-09-14. Refresh with: pip install -U -r requirements.txt
+robotframework==7.5
+selenium==4.44.0
+robotframework-seleniumlibrary==6.9.0
+robotframework-browser==20.4.0
+
+# API
+robotframework-requests==0.9.7
+robotframework-jsonlibrary==0.5
+jsonschema==4.26.0
+PyYAML==6.0.3
+
+# Data / scale / quality
+robotframework-faker==6.0.0
+robotframework-pabot==5.2.2
+robotframework-datadriver==1.11.2
+robotframework-robocop==9.0.0
+
+# Reporting (optional single-file HTML via `make test-allure`)
+allure-robotframework==2.16.0
+allure-combine==1.0.11
