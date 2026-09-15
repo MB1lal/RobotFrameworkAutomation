@@ -30,16 +30,16 @@ Open Login Page
         ...    binary_location="${CHROME_BINARY}"
         ...    binary_location="${CHROME_BINARY}";${options}
     END
-    ${driver_path}=    Set Variable If
+    ${service}=    Set Variable If
     ...    '${CHROMEDRIVER_PATH}' != ''
-    ...    ${CHROMEDRIVER_PATH}
+    ...    executable_path="${CHROMEDRIVER_PATH}"
     ...    ${EMPTY}
     IF    '${GRID_URL}' != ''
         Open Browser    ${HEROKU_URL}    ${BROWSER}    remote_url=${GRID_URL}
-        ...    options=${options}    executable_path=${driver_path}
+        ...    options=${options}    service=${service}
     ELSE
         Open Browser    ${HEROKU_URL}    ${BROWSER}
-        ...    options=${options}    executable_path=${driver_path}
+        ...    options=${options}    service=${service}
     END
     Set Selenium Timeout    ${TIMEOUT}
     Maximize Browser Window
