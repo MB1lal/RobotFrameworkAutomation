@@ -51,6 +51,23 @@ jobs:
           mkdir -p Results
           python -m pabot.pabot --processes 2 --pythonpath . \
             --variablefile config/prod.yaml --outputdir Results Tests
+      - name: Summarize failures in job log
+        if: always()
+        run: |
+          python -c "
+          from robot.api import ExecutionResult
+          r = ExecutionResult('Results/output.xml')
+          def walk(s):
+              for t in s.tests:
+                  if t.status != 'PASS':
+                      print('FAILED:', s.name, '::', t.name)
+                      for kw in t.body:
+                          if getattr(kw, 'status', '') == 'FAIL' and getattr(kw, 'message', ''):
+                              print('   ', kw.message.splitlines()[0][:300]); break
+              for sub in s.suites:
+                  walk(sub)
+          walk(r.suite)
+          "
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4

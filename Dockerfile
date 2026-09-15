@@ -4,11 +4,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HEADLESS=true \
     BROWSER=Chrome \
-    TIMEOUT=15s
+    TIMEOUT=15s \
+    CHROMEDRIVER_PATH=/usr/bin/chromedriver \
+    CHROME_BINARY=/usr/bin/chromium
 
-# Chromium for Selenium + Node.js for the Browser (Playwright) library
+# Chromium for Selenium (distro-matched chromium-driver, since Selenium
+# Manager does not resolve drivers for Chromium) + Node.js for Browser lib
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        chromium nodejs npm \
+        chromium chromium-driver nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/tests
@@ -19,4 +22,4 @@ RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requireme
 COPY . .
 RUN mkdir -p Results
 
-CMD ["sh", "-c", "python -m pabot.pabot --processes 2 --outputdir Results Tests"]
+CMD ["sh", "-c", "python -m pabot.pabot --processes 2 --pythonpath . --variablefile config/prod.yaml --outputdir Results Tests"]

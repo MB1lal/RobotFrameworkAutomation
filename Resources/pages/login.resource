@@ -19,14 +19,27 @@ ${FLASH_MESSAGE}     id:flash
 Open Login Page
     [Documentation]    Open the login page (headless when HEADLESS=true,
     ...    remote when GRID_URL is set).
+    ${headless}=    Convert To Boolean    ${HEADLESS}
     ${options}=    Set Variable If
-    ...    '${HEADLESS}' == 'true'
+    ...    ${headless}
     ...    add_argument("--headless");add_argument("--no-sandbox");add_argument("--disable-dev-shm-usage")
     ...    ${EMPTY}
+    IF    '${CHROME_BINARY}' != ''
+        ${options}=    Set Variable If
+        ...    '${options}' == ''
+        ...    binary_location="${CHROME_BINARY}"
+        ...    binary_location="${CHROME_BINARY}";${options}
+    END
+    ${driver_path}=    Set Variable If
+    ...    '${CHROMEDRIVER_PATH}' != ''
+    ...    ${CHROMEDRIVER_PATH}
+    ...    ${EMPTY}
     IF    '${GRID_URL}' != ''
-        Open Browser    ${HEROKU_URL}    ${BROWSER}    remote_url=${GRID_URL}    options=${options}
+        Open Browser    ${HEROKU_URL}    ${BROWSER}    remote_url=${GRID_URL}
+        ...    options=${options}    executable_path=${driver_path}
     ELSE
-        Open Browser    ${HEROKU_URL}    ${BROWSER}    options=${options}
+        Open Browser    ${HEROKU_URL}    ${BROWSER}
+        ...    options=${options}    executable_path=${driver_path}
     END
     Set Selenium Timeout    ${TIMEOUT}
     Maximize Browser Window
